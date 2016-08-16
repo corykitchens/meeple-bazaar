@@ -1,5 +1,25 @@
 angular.module('starter.controllers', [])
 
+.controller('HotnessCtrl', function($scope, $http, $firebase, $firebaseObject, firebaseConn, boardGameGeek) {
+  $scope.games = []
+  $http({
+    method: 'GET',
+    url: 'https://bgg-json.azurewebsites.net/hot'
+  }).then(function(success) {
+    console.log(success);
+    for (var i = 0; i < success.data.length; i++) {
+      $scope.games.push({
+        name : success.data[i].name,
+        image : success.data[i].thumbnail
+      });
+      $scope.games[i] = $firebaseObject(ref.child('bgghotness').child())
+    }
+
+  }, function(error) {
+    console.log(error);
+  })
+})
+
 .controller('DashCtrl', function($scope) {})
 
 .controller('ChatsCtrl', function($scope, Chats) {
@@ -17,6 +37,8 @@ angular.module('starter.controllers', [])
   };
 })
 
+
+
 .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
   $scope.chat = Chats.get($stateParams.chatId);
 })
@@ -26,3 +48,5 @@ angular.module('starter.controllers', [])
     enableFriends: true
   };
 });
+
+

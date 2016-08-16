@@ -1,5 +1,27 @@
 angular.module('starter.services', [])
 
+.factory("firebaseConn", function($firebaseArray) {
+  var ref = new Firebase("https://meeple-bazaar.firebaseio.com/");
+  var refWishlist = new Firebase("https://meeple-bazaar.firebaseio.com/wishlist");
+  var refCurrentHotness = new Firebase("https://meeple-bazaar.firebaseio.com/hotness")
+  return {
+    ref: function() {
+      return ref;
+    },
+    refWishlist: function() {
+      return refWishlist;
+    },
+    refCurrentHotness: function() {
+      return refCurrentHotness;
+    }
+  }
+})
+
+.factory('boardGameGeek', function() {
+  return null;
+})
+
+
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
 
