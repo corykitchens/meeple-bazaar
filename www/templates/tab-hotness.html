@@ -1,11 +1,11 @@
 <ion-view view-title="Hotness">
   <ion-content class="padding">
     <h2>Current Hotness</h2>
-    <div class="list"> 
-      <li ng-repeat="game in games" class="item item-thumbnail-left">
-        <img ng-src="{{game.image}}">
+    <ion-list>
+      <ion-item ng-repeat="game in games">
+        <img ng-src="{{game.thumbnail}}" class="thumbnail">
         {{game.name}}
-      </li>
-    </div>    
+      </ion-item>
+    </ion-list>
   </ion-content>
 </ion-view>

@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'firebase', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -45,6 +45,16 @@ angular.module('starter', ['ionic', 'firebase', 'starter.controllers', 'starter.
       'tab-hotness': {
         templateUrl: 'templates/tab-hotness.html',
         controller: 'HotnessCtrl'
+      }
+    }
+  })
+
+  .state('tab.sales', {
+    url: '/sales',
+    views: {
+      'tab-sales': {
+        templateUrl: 'templates/tab-sales.html',
+        controller: 'SalesCtrl'
       }
     }
   })

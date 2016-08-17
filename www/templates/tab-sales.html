@@ -1,0 +1,10 @@
+<ion-view view-title="Sales">
+  <ion-content class="padding">
+    <h2>Recent Sales</h2>
+    <ion-list>
+      <ion-item ng-repeat="sale in current_sales">
+        {{sale.title}}
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

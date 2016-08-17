@@ -1,52 +1,67 @@
 angular.module('starter.controllers', [])
 
-.controller('HotnessCtrl', function($scope, $http, $firebase, $firebaseObject, firebaseConn, boardGameGeek) {
-  $scope.games = []
-  $http({
-    method: 'GET',
-    url: 'https://bgg-json.azurewebsites.net/hot'
-  }).then(function(success) {
-    console.log(success);
-    for (var i = 0; i < success.data.length; i++) {
-      $scope.games.push({
-        name : success.data[i].name,
-        image : success.data[i].thumbnail
-      });
-      $scope.games[i] = $firebaseObject(ref.child('bgghotness').child())
-    }
 
-  }, function(error) {
-    console.log(error);
+.controller('HotnessCtrl', function($scope, $http, $firebaseArray) {
+  var ref = firebase.database().ref().child('bgg-hotness');
+  $scope.games = $firebaseArray(ref);
+  $scope.games.$loaded().then(function(games) {
+      if(games.length === 0) {
+          $http({
+              method: 'GET',
+              url: 'https://bgg-json.azurewebsites.net/hot'
+          }).then(function(success) {
+              for(var i = 0; i < success.data.length; i++) {
+                  $scope.games.push({
+                      name : success.data[i].name,
+                      thumbnail : success.data[i].thumbnail
+                  })
+                  $scope.games.$add({
+                      name : success.data[i].name,
+                      thumbnail : success.data[i].thumbnail
+                  })
+              }
+          }, function(error) {
+          })
+      }
   })
 })
 
-.controller('DashCtrl', function($scope) {})
+.controller('AccountCtrl', ['$scope', '$firebaseAuth', '$firebaseObject', function($scope, $firebaseAuth, $) {
+   var auth = $firebaseAuth();
+   $scope.signIn = function(event) {
+    event.preventDefault();
+    var username = $scope.user.email;
+    var password = $scope.user.password;
+    auth.$signInWithEmailAndPassword(
+        username,
+        password
+    ).then(function(firebaseUser) {
+        $scope.firebaseUser = firebaseUser;
+    }, function(error) {
+    })
+   }
+}])
 
-.controller('ChatsCtrl', function($scope, Chats) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
+.controller('SalesCtrl', function($scope, $http, $firebaseArray) {
+    var ref = firebase.database().ref().child('reddit-bg-sales');
+    $scope.current_sales = $firebaseArray(ref);
+    $scope.current_sales.$loaded().then(function(games) {
+        if(games.length === 0) {
+            $http({
+                method: 'GET',
+                url: 'https://www.reddit.com/r/boardgamedeals/hot/.json?count=20'
+            }).then(function(success) {
+                var reddit_posts = success.data.data.children;
+                for(var i = 0; i < reddit_posts.length; i++) {
+                    $scope.current_sales.push({
+                        title: reddit_posts[i].data.title
+                    })
+                    $scope.current_sales.$add({
+                        title : $scope.current_sales[i].title
+                    })
+                }
+            }, function(error) {
+            })
+        }
+    })
 })
-
-
-
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
-
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
-});
-
-
