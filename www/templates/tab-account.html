@@ -2,17 +2,16 @@
   <ion-content>
     <ion-list>
         <label class="item item-input">
-          <input type="email" placeholder="Your Email Address" ng-model="user.email">
+          <input type="text"  name="email_address" placeholder="Your Email Address" ng-model="user.email">
         </label>
         <label class="item item-input">
-          <input type="password" placeholder="Your BGG Username" ng-model="user.bgg">
+          <input type="text" placeholder="Your BGG Username" ng-model="user.bgg">
         </label>
         <label class="item item-input">
           <input type="password" placeholder="Your Password" ng-model="user.password">
         </label>
         <div class="button-bar">
-          <a class="button button-positive">Login</a>
-          <a class="button button-assertive">Signup</a>
+          <a class="button button-positive" ng-click="signIn($event)" href="#">Login</a>
         </div>
     </ion-list>
   </ion-content>

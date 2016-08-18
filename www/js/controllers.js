@@ -1,6 +1,5 @@
 angular.module('starter.controllers', [])
 
-
 .controller('HotnessCtrl', function($scope, $http, $firebaseArray) {
   var ref = firebase.database().ref().child('bgg-hotness');
   $scope.games = $firebaseArray(ref);
@@ -26,22 +25,37 @@ angular.module('starter.controllers', [])
   })
 })
 
-.controller('AccountCtrl', ['$scope', '$firebaseAuth', '$firebaseObject', function($scope, $firebaseAuth, $) {
-   var auth = $firebaseAuth();
-   $scope.signIn = function(event) {
-    event.preventDefault();
-    var username = $scope.user.email;
-    var password = $scope.user.password;
-    auth.$signInWithEmailAndPassword(
-        username,
-        password
-    ).then(function(firebaseUser) {
-        $scope.firebaseUser = firebaseUser;
-    }, function(error) {
-    })
-   }
+.controller('AccountCtrl', ['$scope', '$window', '$firebaseAuth', function($scope, $window, $firebaseAuth) {
+  $scope.user = {}
+  var auth = $firebaseAuth();
+  $scope.signIn = function(event) {
+      event.preventDefault();
+      var username = $scope.user.email;
+      var password = $scope.user.password;
+      var bggUser = $scope.user.bgg;
+      console.log($scope.user);
+      auth.$signInWithEmailAndPassword(
+          username,
+          password
+      ).then(function(firebaseUser) {
+          $window.localStorage.setItem("user", firebaseUser);
+          $window.localStorage.setItem("bgg", bggUser);
+          $scope.verifyBGGName(firebaseUser, bggUser);
+      }, function(error) {
+        console.log('Error ' + error);
+      })
+  }
+  $scope.verifyBGGName = function(firebaseUser, bggUser) {
+    //TODO
+    //Refactor HTTP GET methods as its own service for codereused
+    //Verify that the BGG API returns a 200 response code to ensure the bgg user exists
+    var url = 'https://bgg-json.azurewebsites.net/collection/' + bggUser;
+    
+  };
 }])
 
+//TODO
+//Poll for updated posts from BGG DEALS BOT and insert them into the database
 .controller('SalesCtrl', function($scope, $http, $firebaseArray) {
     var ref = firebase.database().ref().child('reddit-bg-sales');
     $scope.current_sales = $firebaseArray(ref);
@@ -49,7 +63,7 @@ angular.module('starter.controllers', [])
         if(games.length === 0) {
             $http({
                 method: 'GET',
-                url: 'https://www.reddit.com/r/boardgamedeals/hot/.json?count=20'
+                url: 'https://www.reddit.com/user/BGG_DEALS_BOT.json?count=20'
             }).then(function(success) {
                 var reddit_posts = success.data.data.children;
                 for(var i = 0; i < reddit_posts.length; i++) {
@@ -65,3 +79,26 @@ angular.module('starter.controllers', [])
         }
     })
 })
+
+
+.controller('WishListCtrl', ['$scope', '$rootScope','$http', '$firebaseArray', function($scope, $rootScope, $http, $firebaseArray) {
+  var bgguser = $rootScope.bgg;
+  $scope.games = [];
+  $http({
+    method: 'GET',
+    url: 'https://bgg-json.azurewebsites.net/collection/' + bgguser
+  }).then(function(success) {
+    var res = success.data;
+    for(var i = 0; i < res.length; i++) {
+      if(res[i].wishList) {
+        console.log(res[i].name);
+        $scope.games.push({
+          name : res[i].name,
+          thumbnail: res[i].thumbnail
+        });
+      }
+    }
+  }, function(error) {
+    console.log('ERROR! ' + error);
+  })
+}])

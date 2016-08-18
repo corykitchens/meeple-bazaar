@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'firebase', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform, $rootScope, $firebaseAuth, $firebase) {
+.run(function($ionicPlatform, $rootScope, $window, $firebaseAuth, $firebase) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -20,7 +20,21 @@ angular.module('starter', ['ionic', 'firebase', 'starter.controllers', 'starter.
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
-  });
+    
+  })
+ 
+  $rootScope.$on('$stateChangeStart', function() {
+    $rootScope.user = $window.localStorage.getItem('user');
+    $rootScope.bgg = $window.localStorage.getItem('bgg');
+    $rootScope.loggedIn = $rootScope.user ? true : false;
+  })
+
+  $rootScope.logout = function(event) {
+    $rootScope.user = null;
+    $rootScope.bgg = null;
+    $window.localStorage.clear();
+  }
+
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -37,8 +51,8 @@ angular.module('starter', ['ionic', 'firebase', 'starter.controllers', 'starter.
     abstract: true,
     templateUrl: 'templates/tabs.html'
   })
-
-  // Each tab has its own nav history stack:
+  //HOTNESS
+  //Top 50 current games from BoardGameGeek
   .state('tab.hotness', {
     url: '/hotness',
     views: {
@@ -48,7 +62,9 @@ angular.module('starter', ['ionic', 'firebase', 'starter.controllers', 'starter.
       }
     }
   })
-
+  //SALES
+  //Grabs posts from reddit/r/boardgamedeals
+  //TODO - Send polling ajax request to update list
   .state('tab.sales', {
     url: '/sales',
     views: {
@@ -58,7 +74,8 @@ angular.module('starter', ['ionic', 'firebase', 'starter.controllers', 'starter.
       }
     }
   })
-
+  //ACCOUNT
+  //User auth functionality
   .state('tab.account', {
     url: '/account',
     views: {
@@ -67,7 +84,20 @@ angular.module('starter', ['ionic', 'firebase', 'starter.controllers', 'starter.
         controller: 'AccountCtrl'
       }
     }
-  });
+  })
+  //Wishlist
+  //Authenticated User's wishlist of games to purchase
+  //Query this list in the Sales tab and perform lookup
+  //for possible matches of wishlist games currently on sale
+  .state('tab.wishlist', {
+    url: '/wishlist',
+    views: {
+      'tab-wishlist': {
+        templateUrl: 'templates/tab-wishlist.html',
+        controller: 'WishListCtrl'
+      }
+    }
+  })
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/hotness');

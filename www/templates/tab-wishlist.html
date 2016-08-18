@@ -1,0 +1,11 @@
+<ion-view view-title="Wishlist">
+  <ion-content class="padding">
+    <h2>{{bgg}}'s Wishlist</h2>
+    <ion-list> 
+      <ion-item ng-repeat="game in games">
+        <img ng-src="{{game.thumbnail}}" class="thumbnail">
+        {{game.name}}
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
